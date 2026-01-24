@@ -8,6 +8,7 @@ public class Loan {
     private LocalDate dueDate;
     private LocalDate returnDate;
 
+
     public Loan(int bookId, int memberId, LocalDate loanDate, LocalDate dueDate) {
         this.bookId = bookId;
         this.memberId = memberId;
