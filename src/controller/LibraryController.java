@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public class LibraryController {
 
-    private final LoanService loanService = new LoanService();
+    private LoanService loanService = new LoanService();
 
     public void borrowBook(int bookId, int memberId) {
         try {

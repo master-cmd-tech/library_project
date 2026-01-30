@@ -1,70 +1,99 @@
-import service.LoanService;
-import service.FineCalculator;
+import edu.oop.db.DatabaseConnection;
+
+import controller.LibraryController;
 import repository.BookRepository;
-import repository.MemberRepository;
 import repository.LoanRepository;
-import exception.BookAlreadyOnLoanException;
-import exception.MemberNotFoundException;
-import exception.LoanOverdueException;
+import repository.MemberRepository;
 import entities.Book;
 import entities.Loan;
+import entities.Member;
 
-import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        try (
-                Connection connection = DatabaseConnection.getConnection()
-        ) {
+        BookRepository bookRepo = new BookRepository();
+        MemberRepository memberRepo = new MemberRepository();
+        LoanRepository loanRepo = new LoanRepository();
 
-            // Repositories (JDBC inside, NOT here)
-            BookRepository bookRepository = new BookRepository(connection);
-            MemberRepository memberRepository = new MemberRepository(connection);
-            LoanRepository loanRepository = new LoanRepository(connection);
+        Scanner scanner = new Scanner(System.in);
+        boolean running = true;
 
-            // Services
-            FineCalculator fineCalculator = new FineCalculator();
-            LoanService loanService = new LoanService(
-                    bookRepository,
-                    memberRepository,
-                    loanRepository,
-                    fineCalculator
-            );
+        while (running) {
+            System.out.println("\n LIBRARY MENU ");
+            System.out.println("1. List available books");
+            System.out.println("2. Borrow a book");
+            System.out.println("3. Return a book");
+            System.out.println("4. View member loans");
+            System.out.println("5. Exit");
+            System.out.print("Choose an option: ");
 
-            System.out.println("=== AVAILABLE BOOKS ===");
-            List<Book> availableBooks = bookRepository.findAvailableBooks();
-            availableBooks.forEach(System.out::println);
+            int choice = scanner.nextInt();
+            scanner.nextLine();
 
-            int memberId = 1;
-            int bookId = 2;
+            try {
+                switch (choice) {
+                    case 1 -> {
+                        System.out.println("\n=== AVAILABLE BOOKS ===");
+                        for (int i = 1; i <= 10; i++) {
+                            Book book = bookRepo.findById(i);
+                            if (book != null && book.isAvailable()) {
+                                System.out.println(i + ". " + book.getTitle() + " by " + book.getAuthor());
+                            }
+                        }
+                    }
+                    case 2 -> {
+                        System.out.print("Enter book ID to borrow: ");
+                        int bookId = scanner.nextInt();
+                        System.out.print("Enter member ID: ");
+                        int memberId = scanner.nextInt();
 
-            System.out.println("\n=== BORROW BOOK ===");
-            loanService.borrowBook(memberId, bookId);
-            System.out.println("Book borrowed successfully.");
+                        Book book = bookRepo.findById(bookId);
+                        Member member = memberRepo.findById(memberId);
 
-            System.out.println("\n=== CURRENT LOANS FOR MEMBER ===");
-            List<Loan> loans = loanService.getLoansByMember(memberId);
-            loans.forEach(System.out::println);
+                        if (book != null && book.isAvailable() && member != null) {
+                            Loan loan = new Loan(bookId, memberId, LocalDate.now(), LocalDate.now().plusDays(14));
+                            loanRepo.save(loan);
+                            bookRepo.updateAvailability(bookId, false);
+                            System.out.println("Book borrowed successfully: " + book.getTitle());
+                        } else {
+                            System.out.println("Cannot borrow book. Either it's unavailable or member not found.");
+                        }
+                    }
+                    case 3 -> {
+                        System.out.print("Enter loan ID to return: ");
+                        int loanId = scanner.nextInt();
+                        System.out.print("Enter book ID: ");
+                        int bookId = scanner.nextInt();
 
-            System.out.println("\n=== RETURN BOOK ===");
-            loanService.returnBook(bookId);
-            System.out.println("Book returned successfully.");
+                        loanRepo.closeLoan(loanId, LocalDate.now());
+                        bookRepo.updateAvailability(bookId, true);
+                        System.out.println("Book returned successfully.");
+                    }
+                    case 4 -> {
+                        System.out.print("Enter member ID to view loans: ");
+                        int memberId = scanner.nextInt();
 
-        } catch (BookAlreadyOnLoanException e) {
-            System.out.println("ERROR: Book is already on loan.");
-
-        } catch (MemberNotFoundException e) {
-            System.out.println("ERROR: Member not found.");
-
-        } catch (LoanOverdueException e) {
-            System.out.println("ERROR: Loan is overdue. Fine required.");
-
-        } catch (Exception e) {
-            e.printStackTrace();
+                        System.out.println("\n CURRENT LOANS FOR MEMBER ID " + memberId );
+                        System.out.println(" Loan functionality not fully implemented yet.");
+                    }
+                    case 5 -> {
+                        System.out.println("Exiting...");
+                        running = false;
+                    }
+                    default -> System.out.println("Invalid choice, try again.");
+                }
+            } catch (SQLException e) {
+                System.err.println("Database error: " + e.getMessage());
+            }
         }
+
+        scanner.close();
     }
 }

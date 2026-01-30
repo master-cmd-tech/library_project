@@ -7,6 +7,10 @@ import repository.BookRepository;
 import repository.LoanRepository;
 import repository.MemberRepository;
 
+import exception.BookAlreadyOnLoanException;
+import exception.MemberNotFoundException;
+import exception.LoanOverdueException;
+
 import java.sql.SQLException;
 import java.time.LocalDate;
 
@@ -17,6 +21,8 @@ public class LoanService {
     private final LoanRepository loanRepository = new LoanRepository();
     private final FineCalculator fineCalculator = new FineCalculator();
 
+    public LoanService() {}
+
     public void borrowBook(int bookId, int memberId) throws SQLException {
 
         Book book = bookRepository.findById(bookId);
@@ -25,12 +31,12 @@ public class LoanService {
         }
 
         if (!book.isAvailable()) {
-            throw new IllegalStateException("Book is already on loan");
+            throw new BookAlreadyOnLoanException();
         }
 
         Member member = memberRepository.findById(memberId);
         if (member == null) {
-            throw new IllegalArgumentException("Member not found");
+            throw new MemberNotFoundException();
         }
 
         Loan loan = new Loan(
@@ -46,6 +52,10 @@ public class LoanService {
 
     public double returnBook(int loanId, LocalDate dueDate) throws SQLException {
         LocalDate returnDate = LocalDate.now();
+
+        if (returnDate.isAfter(dueDate)) {
+            throw new LoanOverdueException();
+        }
 
         double fine = fineCalculator.calculateFine(dueDate, returnDate);
         loanRepository.closeLoan(loanId, returnDate);
