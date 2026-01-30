@@ -1,15 +1,14 @@
 package service;
 
-import model.Book;
-import model.Loan;
-import model.Member;
+import entities.Book;
+import entities.Loan;
+import entities.Member;
 import repository.BookRepository;
 import repository.LoanRepository;
 import repository.MemberRepository;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.List;
 
 public class LoanService {
 
@@ -18,7 +17,8 @@ public class LoanService {
     private final LoanRepository loanRepository = new LoanRepository();
     private final FineCalculator fineCalculator = new FineCalculator();
 
-    public void borrowBook(Long bookId, Long memberId) throws SQLException {
+    public void borrowBook(int bookId, int memberId) throws SQLException {
+
         Book book = bookRepository.findById(bookId);
         if (book == null) {
             throw new IllegalArgumentException("Book not found");
@@ -37,25 +37,19 @@ public class LoanService {
                 bookId,
                 memberId,
                 LocalDate.now(),
-                LocalDate.now().plusDays(14),
-                null
+                LocalDate.now().plusDays(14)
         );
 
         loanRepository.save(loan);
         bookRepository.updateAvailability(bookId, false);
     }
 
-    public long returnBook(Long loanId, LocalDate dueDate) throws SQLException {
+    public double returnBook(int loanId, LocalDate dueDate) throws SQLException {
         LocalDate returnDate = LocalDate.now();
 
-        long fine = fineCalculator.calculateFine(dueDate, returnDate);
-
+        double fine = fineCalculator.calculateFine(dueDate, returnDate);
         loanRepository.closeLoan(loanId, returnDate);
 
         return fine;
-    }
-
-    public List<Loan> getActiveLoansByMember(Long memberId) throws SQLException {
-        return loanRepository.findActiveLoansByMember(memberId);
     }
 }

@@ -5,12 +5,12 @@ import java.time.temporal.ChronoUnit;
 
 public class FineCalculator {
 
-    private static final int FINE_PER_DAY = 100; // you can explain this in defense
+    private static final double DAILY_FINE = 1.5;
 
-    public long calculateFine(LocalDate dueDate, LocalDate returnDate) {
+    public double calculateFine(LocalDate dueDate, LocalDate returnDate) {
         if (returnDate.isAfter(dueDate)) {
-            long overdueDays = ChronoUnit.DAYS.between(dueDate, returnDate);
-            return overdueDays * FINE_PER_DAY;
+            long daysLate = ChronoUnit.DAYS.between(dueDate, returnDate);
+            return daysLate * DAILY_FINE;
         }
         return 0;
     }

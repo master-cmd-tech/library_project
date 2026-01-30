@@ -1,4 +1,4 @@
-package model;
+package entities;
 
 public class Book {
     private int id;
@@ -7,12 +7,19 @@ public class Book {
     private String isbn;
     private boolean available;
 
+    public Book() {
+    }
+
+    public Book(String title, String author, String isbn, boolean available) {
+        setTitle(title);
+        setAuthor(author);
+        setIsbn(isbn);
+        setAvailable(available);
+    }
+
     public Book(int id, String title, String author, String isbn, boolean available) {
-        this.id = id;
-        this.title = title;
-        this.author = author;
-        this.isbn = isbn;
-        this.available = available;
+        this(title, author, isbn, available);
+        setId(id);
     }
 
     public int getId() {
@@ -25,9 +32,7 @@ public class Book {
 
     public String getIsbn() { return isbn; }
 
-    public boolean isAvailable() {
-        return available;
-    }
+    public boolean isAvailable() { return available; }
 
 
     public void setId(int id) { this.id = id; }
@@ -38,8 +43,5 @@ public class Book {
 
     public void setIsbn(String isbn) { this.isbn = isbn; }
 
-    public void setAvailable(boolean available) {
-        this.available = available;
-    }
-
+    public void setAvailable(boolean available) { this.available = available; }
 }

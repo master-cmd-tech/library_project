@@ -1,14 +1,20 @@
-package model;
+package entities;
 
 public class Member {
     private int id;
     private String name;
     private String email;
 
+    public Member() {}
+
+    public Member(String name, String email) {
+        setName(name);
+        setEmail(email);
+    }
+
     public Member(int id, String name, String email ) {
+        this(name, email);
         this.id = id;
-        this.name = name;
-        this.email = email;
     }
 
     public int getId() {

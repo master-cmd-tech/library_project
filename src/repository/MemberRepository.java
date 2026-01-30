@@ -1,33 +1,25 @@
 package repository;
 
 import edu.oop.db.DatabaseConnection;
-import model.Member;
+import entities.Member;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class MemberRepository {
 
-    public Member findById(Long id) throws SQLException {
-        String sql = "SELECT id, name, email FROM members WHERE id = ?";
+    public Member findById(int id) throws SQLException {
+        String sql = "SELECT * FROM members WHERE id = ?";
+        PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql);
+        ps.setInt(1, id);
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setLong(1, id);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return new Member(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email")
-                );
-            }
-            return null;
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return new Member(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getString("email")
+            );
         }
+        return null;
     }
 }
-

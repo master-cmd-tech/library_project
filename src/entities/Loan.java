@@ -1,4 +1,4 @@
-package model;
+package entities;
 
 import java.time.LocalDate;
 
@@ -10,11 +10,21 @@ public class Loan {
     private LocalDate dueDate;
     private LocalDate returnDate;
 
+    public Loan(){
+
+    }
+
     public Loan(int bookId, int memberId, LocalDate loanDate, LocalDate dueDate) {
-        this.bookId = bookId;
-        this.memberId = memberId;
-        this.loanDate = loanDate;
-        this.dueDate = dueDate;
+        setBookId(bookId);
+        setMemberId(memberId);
+        setLoanDate(loanDate);
+        setDueDate(dueDate);
+    }
+
+    public Loan(int id, int bookId, int memberId, LocalDate loanDate, LocalDate dueDate,LocalDate returnDate ) {
+        this(bookId, memberId, loanDate, dueDate);
+        setId(id);
+        setReturnDate(returnDate);
     }
 
     public int getId() { return id; }
