@@ -4,6 +4,8 @@ import edu.oop.db.DatabaseConnection;
 import entities.Book;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BookRepository {
 
@@ -31,4 +33,24 @@ public class BookRepository {
         ps.setInt(2, bookId);
         ps.executeUpdate();
     }
+    public List<Book> findAll() throws SQLException {
+        List<Book> books = new ArrayList<>();
+
+        String sql = "SELECT * FROM books";
+        PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            books.add(new Book(
+                    rs.getInt("id"),
+                    rs.getString("title"),
+                    rs.getString("author"),
+                    rs.getString("isbn"),
+                    rs.getBoolean("available")
+            ));
+        }
+
+        return books;
+    }
+
 }
