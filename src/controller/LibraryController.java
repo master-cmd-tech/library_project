@@ -25,4 +25,12 @@ public class LibraryController {
             System.out.println(e.getMessage());
         }
     }
+
+    public void viewMemberLoans(int memberId) {
+        try {
+            loanService.viewLoansByMember(memberId);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }

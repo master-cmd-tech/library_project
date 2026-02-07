@@ -1,5 +1,6 @@
 package service;
 
+import edu.oop.db.DatabaseConnection;
 import entities.Book;
 import entities.Loan;
 import entities.Member;
@@ -11,8 +12,12 @@ import exception.BookAlreadyOnLoanException;
 import exception.MemberNotFoundException;
 import exception.LoanOverdueException;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoanService {
 
@@ -62,4 +67,28 @@ public class LoanService {
 
         return fine;
     }
+
+    public void viewLoansByMember(int memberId) throws SQLException {
+
+        Member member = memberRepository.findById(memberId);
+        if (member == null) {
+            throw new MemberNotFoundException();
+        }
+
+        List<Loan> loans = loanRepository.findActiveLoansByMember(memberId);
+
+        if (loans.isEmpty()) {
+            System.out.println("No active loans for member: " + member.getName());
+            return;
+        }
+
+        System.out.println("\nActive loans for " + member.getName() + ":");
+
+        loans.forEach(loan -> System.out.println(
+                "Loan ID: " + loan.getId() +
+                        ", Book ID: " + loan.getBookId() +
+                        ", Due date: " + loan.getDueDate()
+        ));
+    }
+
 }

@@ -80,8 +80,8 @@ public class Main {
                         System.out.print("Enter member ID to view loans: ");
                         int memberId = scanner.nextInt();
 
-                        System.out.println("\n CURRENT LOANS FOR MEMBER ID " + memberId );
-                        System.out.println(" Loan functionality not fully implemented yet.");
+                        LibraryController controller = new LibraryController();
+                        controller.viewMemberLoans(memberId);
                     }
                     case 5 -> {
                         System.out.println("Exiting...");

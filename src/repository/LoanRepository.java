@@ -5,6 +5,8 @@ import entities.Loan;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoanRepository {
 
@@ -29,4 +31,34 @@ public class LoanRepository {
         ps.setInt(2, loanId);
         ps.executeUpdate();
     }
+
+    public List<Loan> findActiveLoansByMember(int memberId) throws SQLException {
+
+        String sql = """
+            SELECT * FROM loans
+            WHERE member_id = ? AND return_date IS NULL
+            """;
+
+        PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql);
+        ps.setInt(1, memberId);
+
+        ResultSet rs = ps.executeQuery();
+        List<Loan> loans = new ArrayList<>();
+
+        while (rs.next()) {
+            loans.add(new Loan(
+                    rs.getInt("id"),
+                    rs.getInt("book_id"),
+                    rs.getInt("member_id"),
+                    rs.getDate("loan_date").toLocalDate(),
+                    rs.getDate("due_date").toLocalDate(),
+                    rs.getDate("return_date") != null
+                            ? rs.getDate("return_date").toLocalDate()
+                            : null
+            ));
+        }
+
+        return loans;
+    }
+
 }
