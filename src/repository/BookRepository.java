@@ -6,8 +6,9 @@ import entities.Book;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public class BookRepository {
+public class BookRepository implements CrudRepository<Book, Integer> {
 
     public Book findById(int id) throws SQLException {
         String sql = "SELECT * FROM books WHERE id = ?";
@@ -33,6 +34,12 @@ public class BookRepository {
         ps.setInt(2, bookId);
         ps.executeUpdate();
     }
+
+    @Override
+    public Optional<Book> findById(Integer integer) throws SQLException {
+        return Optional.empty();
+    }
+
     public List<Book> findAll() throws SQLException {
         List<Book> books = new ArrayList<>();
 
@@ -51,6 +58,21 @@ public class BookRepository {
         }
 
         return books;
+    }
+
+    @Override
+    public void save(Book entity) throws SQLException {
+
+    }
+
+    @Override
+    public void update(Book entity) throws SQLException {
+
+    }
+
+    @Override
+    public void deleteById(Integer integer) throws SQLException {
+
     }
 
 }

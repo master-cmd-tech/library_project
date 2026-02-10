@@ -1,14 +1,16 @@
 package repository;
 
 import edu.oop.db.DatabaseConnection;
+import entities.Book;
 import entities.Loan;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public class LoanRepository {
+public class LoanRepository implements CrudRepository<Book, Integer> {
 
     public void save(Loan loan) throws SQLException {
         String sql = """
@@ -61,4 +63,28 @@ public class LoanRepository {
         return loans;
     }
 
+    @Override
+    public Optional<Book> findById(Integer integer) throws SQLException {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Book> findAll() throws SQLException {
+        return List.of();
+    }
+
+    @Override
+    public void save(Book entity) throws SQLException {
+
+    }
+
+    @Override
+    public void update(Book entity) throws SQLException {
+
+    }
+
+    @Override
+    public void deleteById(Integer integer) throws SQLException {
+
+    }
 }
